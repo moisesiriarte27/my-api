@@ -12,7 +12,7 @@ import jakarta.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
-@Table(name = "persona")
+@Table(name = "personas")
 public class Persona {
 
     @Id
