@@ -1,0 +1,34 @@
+# Compiled class files
+*.class
+target/
+*.jar
+*.war
+*.nar
+
+# Log files
+*.log
+
+# IDE files
+.metadata
+.settings/
+.project
+.classpath
+.factorypath
+.vscode/
+*.iml
+.idea/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Spring Boot
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+
+# Application properties with sensitive data (descomenta si tienes datos sensibles)
+# application-dev.properties
+# application-prod.properties
