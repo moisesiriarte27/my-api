@@ -3,7 +3,7 @@ package com.example.my_API.config.property;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@ConfigurationProperties("my_api")
+@ConfigurationProperties("my-api")
 public class my_APIApiProperty {
 
     // Origen permitido para CORS
