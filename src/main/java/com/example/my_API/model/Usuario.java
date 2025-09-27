@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
@@ -16,8 +18,9 @@ import jakarta.persistence.Table;
 @Table(name = "usuario")
 public class Usuario {
 
-    @Id
-    private Long codigo;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long codigo;;
 
     private String nombre;
     private String correo;
