@@ -22,13 +22,20 @@ public class AppUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String correo) throws UsernameNotFoundException {
+        // --- LÍNEA DE DEBUG 1 ---
+        System.out.println("--- INTENTANDO BUSCAR USUARIO CON CORREO: " + correo + " ---");
+
         Optional<Usuario> usuarioOpt = usuarioRepository.findByCorreo(correo);
 
         if (usuarioOpt.isEmpty()) {
+            // --- LÍNEA DE DEBUG 2 ---
+            System.out.println("--- USUARIO NO ENCONTRADO EN LA BASE DE DATOS ---");
             throw new UsernameNotFoundException("Usuario no encontrado: " + correo);
         }
 
         Usuario usuario = usuarioOpt.get();
+        // --- LÍNEA DE DEBUG 3 ---
+        System.out.println("--- USUARIO ENCONTRADO: " + usuario.getCorreo() + " ---");
 
         return User.builder()
                 .username(usuario.getCorreo())
