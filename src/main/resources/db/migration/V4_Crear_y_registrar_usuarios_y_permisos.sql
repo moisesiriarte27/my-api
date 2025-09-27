@@ -20,7 +20,7 @@ CREATE TABLE usuario_permiso (
 
 -- Usuarios
 INSERT INTO usuario (codigo, nombre, correo, clave) 
-VALUES (1, 'Administrador', 'Cherembo123', '$2a$10$X607ZPhQ4EgGNaYKt3n4SONjIv9zc.VMWdEuhCuba7oLAL5IvcL5.');
+VALUES (1, 'Administrador', 'moisesiriarte@gmail.com', '$2a$10$X607ZPhQ4EgGNaYKt3n4SONjIv9zc.VMWdEuhCuba7oLAL5IvcL5.');
 
 INSERT INTO usuario (codigo, nombre, correo, clave) 
 VALUES (2, 'Maria Silva', 'Cherembo2002', '$2a$10$Zc3w6HyuPOPXamaMhh.PQOXvDnEsadztbfi6/RyZWJDzimE8WQjaq');
