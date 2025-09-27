@@ -25,13 +25,17 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestParam String correo, @RequestParam String clave) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) { // <-- 1. Usa @RequestBody y el DTO
         try {
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(correo, clave)
+                    // 2. Obtiene los datos del objeto loginRequest
+                    new UsernamePasswordAuthenticationToken(loginRequest.getCorreo(), loginRequest.getClave())
             );
-            String token = jwtService.generateToken(correo);
-            return ResponseEntity.ok(token);
+            // 3. Genera el token usando el correo del objeto
+            String token = jwtService.generateToken(loginRequest.getCorreo());
+            
+            // 4. Devuelve el token en un objeto JSON para que sea más fácil de manejar en el frontend
+            return ResponseEntity.ok(java.util.Collections.singletonMap("token", token));
         } catch (AuthenticationException e) {
             return ResponseEntity.status(401).body("Usuario o contraseña incorrectos");
         }
