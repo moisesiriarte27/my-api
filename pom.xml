@@ -90,11 +90,7 @@
             <scope>runtime</scope>
         </dependency>
 
-     <dependency>
-       <groupId>org.flywaydb</groupId>
-       <artifactId>flyway-core</artifactId>
-       <version>10.1.0</version>
-    </dependency>   
+  
     <dependency>
        <groupId>org.postgresql</groupId>
        <artifactId>postgresql</artifactId>
@@ -178,8 +174,8 @@
 
             <!-- Flyway Maven Plugin -->
             <plugin>
-                <groupId>org.flywaydb</groupId>
-                <artifactId>flyway-maven-plugin</artifactId>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
                 
                 <configuration>
                     <url>jdbc:mysql://localhost:3307/base_del_goat</url>
