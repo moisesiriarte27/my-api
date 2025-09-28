@@ -16,7 +16,7 @@ public class Categoria {
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long codigo;
     
-    private String nome;
+    private String nombre;
 
     public Long getCodigo() {
         return codigo;
@@ -27,11 +27,11 @@ public class Categoria {
     }
 
     public String getNome() {
-        return nome;
+        return nombre;
     }
 
     public void setNome(String nome) {
-        this.nome = nome;
+        this.nombre = nome;
     }
 
     @Override
