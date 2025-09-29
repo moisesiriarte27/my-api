@@ -1,18 +1,20 @@
 package com.example.my_API.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import com.example.my_API.model.lanzamiento;
-
-// No necesitas importar List ni @Query si no tienes métodos personalizados complejos
+import com.example.my_API.repository.projection.ResumoLanzamiento;
+import java.util.List;
 
 public interface lanzamientoRepository extends JpaRepository<lanzamiento, Long> {
 
-    // Ya no necesitamos el método findAllWithRelations(), porque no hay relaciones que cargar.
-    // El método findAll() que nos da JpaRepository por defecto es suficiente.
-    
-    // Si necesitas el método para otra cosa, debes eliminar los JOIN FETCH:
-    /*
-    @Query("SELECT l FROM lanzamiento l")
-    List<lanzamiento> findAllWithRelations(); // El nombre ya no tendría sentido, mejor renombrarlo a findAllLanzamientos()
-    */
+    // --- NUEVA CONSULTA ---
+    // Esta consulta une las tablas y devuelve una lista de ResumoLanzamiento.
+    // Nota: Asegúrate que tus entidades se llamen 'Categoria' y 'personas' y sus campos 'nome' y 'nombre'
+    @Query("SELECT new com.example.my_API.repository.projection.ResumoLanzamiento(" +
+           "l.codigo, l.descripcion, l.fechavencimiento, l.fechapago, l.valor, l.tipo, c.nome, p.nombre) " +
+           "FROM lanzamiento l, Categoria c, personas p " +
+           "WHERE l.codigo_categoria = c.codigo AND l.codigo_personas = p.codigo")
+    List<ResumoLanzamiento> findAllResumo();
 }
+

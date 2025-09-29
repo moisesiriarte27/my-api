@@ -16,13 +16,12 @@ import com.example.my_API.event.RecursoCreadoEvent;
 import com.example.my_API.model.Erro;
 import com.example.my_API.model.lanzamiento;
 import com.example.my_API.repository.lanzamientoRepository;
+import com.example.my_API.repository.projection.ResumoLanzamiento; // <-- Importación necesaria
 import com.example.my_API.service.lanzamientoService;
 import com.example.my_API.service.exception.PersonasInexistenteoinactivo;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-
-// Nota: He quitado las importaciones de Page, Pageable, etc., que ya no se usan.
 
 @RestController
 @RequestMapping("/lanzamientos")
@@ -40,27 +39,14 @@ public class lanzamientoResource {
     @Autowired
     private lanzamientoService lanzamientoService;
 
-    // --- MODIFICACIÓN #1 ---
-    // Corregido para usar el método findAll() que es compatible con la nueva entidad.
-    // Renombrado de 'buscar' a 'listar' por convención.
+    // --- MODIFICADO ---
+    // Este endpoint ahora devuelve la lista de resúmenes enriquecidos con nombres
     @GetMapping
-    public List<lanzamiento> listar() {
-        return lanzamientoRepository.findAll();
+    public List<ResumoLanzamiento> listar() {
+        return lanzamientoRepository.findAllResumo();
     }
     
-    // --- MODIFICACIÓN #2 ---
-    // El método 'resumir' ha sido comentado porque su consulta personalizada en el repositorio
-    // seguramente se rompió al eliminar las relaciones. Para arreglarlo, necesitaríamos
-    // ver y corregir la consulta en 'lanzamientoRepository.java'.
-    /*
-    @GetMapping(params = "resumo")
-    @PreAuthorize("hasAuthority('ROLE_CONSULTAR_LANZAMIENTO')")
-    public Page<ResumoLanzamiento> resumir(lanzamientoFilter lanzamientoFilter, Pageable pageable) {
-        return lanzamientoRepository.resumir(lanzamientoFilter, pageable);
-    }
-    */
-
-    // GET por código (Este método ya era correcto)
+    // GET por código (Devuelve la entidad completa, lo cual es correcto para editar)
     @GetMapping("/{codigo}")
     public ResponseEntity<lanzamiento> buscarPeloCodigo(@PathVariable Long codigo) {
         Optional<lanzamiento> lanzamiento = lanzamientoRepository.findById(codigo);
@@ -75,14 +61,13 @@ public class lanzamientoResource {
         return ResponseEntity.status(HttpStatus.CREATED).body(lanzamientoguardado);
     }
 
-    // DELETE por código (Este método ya era correcto)
+    // ... (El resto de tus métodos 'remover' y 'handlePersonasInexistenteoinactivo' no cambian) ...
     @DeleteMapping("/{codigo}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void remover(@PathVariable Long codigo) {
         lanzamientoRepository.deleteById(codigo);
     }
 
-    // Manejo de excepción (Este método ya era correcto)
     @ExceptionHandler({ PersonasInexistenteoinactivo.class })
     public ResponseEntity<Object> handlePersonasInexistenteoinactivo(PersonasInexistenteoinactivo ex) {
         String mensagemUsuario = messageSource.getMessage("persona.inexistente", null, LocaleContextHolder.getLocale());
