@@ -16,7 +16,7 @@ import com.example.my_API.event.RecursoCreadoEvent;
 import com.example.my_API.model.Erro;
 import com.example.my_API.model.lanzamiento;
 import com.example.my_API.repository.lanzamientoRepository;
-import com.example.my_API.repository.projection.ResumoLanzamiento; // <-- Importación necesaria
+import com.example.my_API.repository.projection.ResumoLanzamiento;
 import com.example.my_API.service.lanzamientoService;
 import com.example.my_API.service.exception.PersonasInexistenteoinactivo;
 
@@ -39,21 +39,17 @@ public class lanzamientoResource {
     @Autowired
     private lanzamientoService lanzamientoService;
 
-    // --- MODIFICADO ---
-    // Este endpoint ahora devuelve la lista de resúmenes enriquecidos con nombres
     @GetMapping
     public List<ResumoLanzamiento> listar() {
         return lanzamientoRepository.findAllResumo();
     }
     
-    // GET por código (Devuelve la entidad completa, lo cual es correcto para editar)
     @GetMapping("/{codigo}")
     public ResponseEntity<lanzamiento> buscarPeloCodigo(@PathVariable Long codigo) {
         Optional<lanzamiento> lanzamiento = lanzamientoRepository.findById(codigo);
         return lanzamiento.isPresent() ? ResponseEntity.ok(lanzamiento.get()) : ResponseEntity.notFound().build();
     }
 
-    // POST para crear lanzamiento (Este método ya era correcto)
     @PostMapping
     public ResponseEntity<lanzamiento> crear(@Valid @RequestBody lanzamiento lanzamiento, HttpServletResponse response) {
         lanzamiento lanzamientoguardado = lanzamientoService.guardar(lanzamiento);
@@ -61,7 +57,14 @@ public class lanzamientoResource {
         return ResponseEntity.status(HttpStatus.CREATED).body(lanzamientoguardado);
     }
 
-    // ... (El resto de tus métodos 'remover' y 'handlePersonasInexistenteoinactivo' no cambian) ...
+    // --- AÑADIDO: El método que faltaba para manejar las peticiones PUT ---
+    @PutMapping("/{codigo}")
+    public ResponseEntity<lanzamiento> actualizar(@PathVariable Long codigo, @Valid @RequestBody lanzamiento lanzamiento) {
+        lanzamiento lanzamientoActualizado = lanzamientoService.actualizar(codigo, lanzamiento);
+        return ResponseEntity.ok(lanzamientoActualizado);
+    }
+    // --- FIN DEL CÓDIGO AÑADIDO ---
+
     @DeleteMapping("/{codigo}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void remover(@PathVariable Long codigo) {
@@ -76,4 +79,3 @@ public class lanzamientoResource {
         return ResponseEntity.badRequest().body(erros);
     }
 }
-
