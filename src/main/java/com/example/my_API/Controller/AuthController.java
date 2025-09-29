@@ -27,17 +27,11 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
-            // 1. Autentica al usuario con sus credenciales
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getCorreo(), loginRequest.getClave())
             );
-            
-            // 2. Si la autenticación es exitosa, genera un token DINÁMICO
             String token = jwtService.generateToken(loginRequest.getCorreo());
-            
-            // 3. Devuelve el token en un objeto JSON estándar
             return ResponseEntity.ok(java.util.Collections.singletonMap("token", token));
-
         } catch (AuthenticationException e) {
             return ResponseEntity.status(401).body("Usuario o contraseña incorrectos");
         }
@@ -48,7 +42,6 @@ public class AuthController {
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             return ResponseEntity.badRequest().body("Token faltante o inválido");
         }
-
         String token = authHeader.substring(7);
         tokenBlacklist.revokeToken(token);
         return ResponseEntity.ok("Token revocado correctamente");
