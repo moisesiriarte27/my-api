@@ -3,6 +3,7 @@ package com.example.my_API.security;
 import java.security.Key;
 import java.util.Date;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import io.jsonwebtoken.Claims;
@@ -12,7 +13,8 @@ import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
-
+    @Value("${jwt.secret}")
+    private String secretKey;
     private static final String SECRET_KEY = "MiClaveSecretaMuySeguraParaJWT123456789";
     private final Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 
