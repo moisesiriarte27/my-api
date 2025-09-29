@@ -2,30 +2,27 @@ package com.example.my_API.resource;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.my_API.event.RecursoCreadoEvent;
 import com.example.my_API.model.Erro;
 import com.example.my_API.model.lanzamiento;
 import com.example.my_API.repository.lanzamientoRepository;
-import com.example.my_API.repository.filter.lanzamientoFilter;
 import com.example.my_API.service.lanzamientoService;
 import com.example.my_API.service.exception.PersonasInexistenteoinactivo;
-import com.example.my_API.repository.projection.ResumoLanzamiento;
+
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+
+// Nota: He quitado las importaciones de Page, Pageable, etc., que ya no se usan.
 
 @RestController
 @RequestMapping("/lanzamientos")
@@ -43,28 +40,34 @@ public class lanzamientoResource {
     @Autowired
     private lanzamientoService lanzamientoService;
 
-    // GET todos los lanzamientos con categoria y personas
+    // --- MODIFICACIÓN #1 ---
+    // Corregido para usar el método findAll() que es compatible con la nueva entidad.
+    // Renombrado de 'buscar' a 'listar' por convención.
     @GetMapping
-    public ResponseEntity<List<lanzamiento>> buscar() {
-        List<lanzamiento> lanzamientos = lanzamientoRepository.findAllWithRelations();
-        return ResponseEntity.ok(lanzamientos);
+    public List<lanzamiento> listar() {
+        return lanzamientoRepository.findAll();
     }
     
+    // --- MODIFICACIÓN #2 ---
+    // El método 'resumir' ha sido comentado porque su consulta personalizada en el repositorio
+    // seguramente se rompió al eliminar las relaciones. Para arreglarlo, necesitaríamos
+    // ver y corregir la consulta en 'lanzamientoRepository.java'.
+    /*
     @GetMapping(params = "resumo")
     @PreAuthorize("hasAuthority('ROLE_CONSULTAR_LANZAMIENTO')")
     public Page<ResumoLanzamiento> resumir(lanzamientoFilter lanzamientoFilter, Pageable pageable) {
         return lanzamientoRepository.resumir(lanzamientoFilter, pageable);
     }
+    */
 
-
-    // GET por código
+    // GET por código (Este método ya era correcto)
     @GetMapping("/{codigo}")
     public ResponseEntity<lanzamiento> buscarPeloCodigo(@PathVariable Long codigo) {
         Optional<lanzamiento> lanzamiento = lanzamientoRepository.findById(codigo);
         return lanzamiento.isPresent() ? ResponseEntity.ok(lanzamiento.get()) : ResponseEntity.notFound().build();
     }
 
-    // POST para crear lanzamiento
+    // POST para crear lanzamiento (Este método ya era correcto)
     @PostMapping
     public ResponseEntity<lanzamiento> crear(@Valid @RequestBody lanzamiento lanzamiento, HttpServletResponse response) {
         lanzamiento lanzamientoguardado = lanzamientoService.guardar(lanzamiento);
@@ -72,14 +75,14 @@ public class lanzamientoResource {
         return ResponseEntity.status(HttpStatus.CREATED).body(lanzamientoguardado);
     }
 
-    // DELETE por código
+    // DELETE por código (Este método ya era correcto)
     @DeleteMapping("/{codigo}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void remover(@PathVariable Long codigo) {
         lanzamientoRepository.deleteById(codigo);
     }
 
-    // Manejo de excepción PersonasInexistenteoinactivo
+    // Manejo de excepción (Este método ya era correcto)
     @ExceptionHandler({ PersonasInexistenteoinactivo.class })
     public ResponseEntity<Object> handlePersonasInexistenteoinactivo(PersonasInexistenteoinactivo ex) {
         String mensagemUsuario = messageSource.getMessage("persona.inexistente", null, LocaleContextHolder.getLocale());

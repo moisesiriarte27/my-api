@@ -1,25 +1,61 @@
 package com.example.my_API.Controller;
 
 import com.example.my_API.model.lanzamiento;
-import com.example.my_API.repository.lanzamientoRepository;
+import com.example.my_API.repository.lanzamientoRepository; // Puedes mantenerla si la usas en otros métodos, si no, se puede quitar
+import com.example.my_API.service.lanzamientoService; // Importamos el servicio
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
+@RequestMapping("/lanzamientos") // 1. Cambiado a plural, es una convención REST para colecciones
 public class LanzamientoController {
 
-    private final lanzamientoRepository lanzamientoRepository;
+    // 2. Inyectamos el servicio en lugar del repositorio directamente
+    @Autowired
+    private lanzamientoService lanzamientoService;
 
-    public LanzamientoController(lanzamientoRepository lanzamientoRepository) {
-        this.lanzamientoRepository = lanzamientoRepository;
+    @Autowired
+    private lanzamientoRepository lanzamientoRepository; // Mantenemos por si lo necesitas para algo más
+
+    // 3. Método para listar todos los lanzamientos (CORREGIDO)
+    @GetMapping
+    public List<lanzamiento> listar() {
+        // Usamos el método findAll() que viene por defecto y es compatible con la nueva entidad
+        return lanzamientoRepository.findAll();
     }
 
-    @GetMapping("/lanzamiento")
-    public ResponseEntity<List<lanzamiento>> getAllLanzamientos() {
-        List<lanzamiento> lanzamientos = lanzamientoRepository.findAllWithRelations();
-        return ResponseEntity.ok(lanzamientos);
+    // 4. Método para buscar un lanzamiento por su código
+    @GetMapping("/{codigo}")
+    public ResponseEntity<lanzamiento> buscarPorCodigo(@PathVariable Long codigo) {
+        return lanzamientoRepository.findById(codigo)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
+
+    // 5. Método para crear un nuevo lanzamiento
+    @PostMapping
+    public ResponseEntity<lanzamiento> crear(@Valid @RequestBody lanzamiento lanzamiento) {
+        lanzamiento lanzamientoGuardado = lanzamientoService.guardar(lanzamiento);
+        return ResponseEntity.status(HttpStatus.CREATED).body(lanzamientoGuardado);
+    }
+    
+    // 6. Puedes añadir aquí los métodos para actualizar (PUT) y eliminar (DELETE) si los necesitas
+    /*
+    @PutMapping("/{codigo}")
+    public ResponseEntity<lanzamiento> actualizar(@PathVariable Long codigo, @Valid @RequestBody lanzamiento lanzamiento) {
+        lanzamiento lanzamientoActualizado = lanzamientoService.actualizar(codigo, lanzamiento);
+        return ResponseEntity.ok(lanzamientoActualizado);
+    }
+
+    @DeleteMapping("/{codigo}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void eliminar(@PathVariable Long codigo) {
+        lanzamientoRepository.deleteById(codigo);
+    }
+    */
 }
