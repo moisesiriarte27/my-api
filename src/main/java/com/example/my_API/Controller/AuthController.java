@@ -27,18 +27,16 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         try {
+            // 1. Autentica al usuario con sus credenciales
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getCorreo(), loginRequest.getClave())
             );
+            
+            // 2. Si la autenticación es exitosa, genera un token DINÁMICO
             String token = jwtService.generateToken(loginRequest.getCorreo());
             
-            // --- ÚNICO CAMBIO REALIZADO PARA LA PRUEBA ---
-            // En lugar de devolver solo el token, ahora devolvemos un objeto con una señal de versión.
-            java.util.Map<String, String> response = new java.util.HashMap<>();
-            response.put("token", token);
-            response.put("version", "DEPLOY_PRUEBA_2.0"); // <-- La señal para verificar el despliegue
-            return ResponseEntity.ok(response);
-            // --- FIN DEL CAMBIO ---
+            // 3. Devuelve el token en un objeto JSON estándar
+            return ResponseEntity.ok(java.util.Collections.singletonMap("token", token));
 
         } catch (AuthenticationException e) {
             return ResponseEntity.status(401).body("Usuario o contraseña incorrectos");

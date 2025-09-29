@@ -2,7 +2,8 @@ package com.example.my_API.security;
 
 import java.security.Key;
 import java.util.Date;
-import jakarta.annotation.PostConstruct; // <-- Se necesita esta importación
+import java.util.UUID;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -13,31 +14,23 @@ import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
-    // Esta es la variable correcta que lee desde application.properties
     @Value("${jwt.secret}")
     private String secretKey;
 
-    // --- CAMBIOS AQUÍ ---
-    // 1. ELIMINAMOS la constante hardcodeada que causaba el problema
-    // private static final String SECRET_KEY = "MiClaveSecretaMuySeguraParaJWT123456789";
-
-    // 2. Declaramos la variable 'key' sin inicializarla aquí
     private Key key;
 
-    // 3. Usamos @PostConstruct para inicializar la 'key' DESPUÉS de que 'secretKey' haya sido inyectada
     @PostConstruct
     public void init() {
         this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
-    // --- FIN DE LOS CAMBIOS ---
 
-
-    // El resto de tu clase no necesita NINGÚN cambio, ya que usa la variable 'key' que ahora es correcta.
     public String generateToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 hora
+                .claim("jti", UUID.randomUUID().toString()) // ID único para cada token
+                .claim("iat", System.currentTimeMillis()) // Timestamp exacto
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -64,8 +57,8 @@ public class JwtService {
                     .getBody();
             return claims.getExpiration().after(new Date());
         } catch (Exception e) {
+            System.out.println("Token inválido: " + e.getMessage()); // Debug
             return false;
         }
     }
 }
-
