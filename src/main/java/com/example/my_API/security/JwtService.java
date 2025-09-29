@@ -1,10 +1,8 @@
 package com.example.my_API.security;
 
-import java.nio.charset.StandardCharsets;
 import java.security.Key;
 import java.util.Date;
 import java.util.UUID;
-
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,7 +14,6 @@ import io.jsonwebtoken.security.Keys;
 
 @Service
 public class JwtService {
-
     @Value("${jwt.secret}")
     private String secretKey;
 
@@ -24,15 +21,16 @@ public class JwtService {
 
     @PostConstruct
     public void init() {
-        this.key = Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8));
+        this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
     }
 
     public String generateToken(String username) {
         return Jwts.builder()
                 .setSubject(username)
-                .setIssuedAt(new Date()) // iat automático
+                .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60)) // 1 hora
                 .claim("jti", UUID.randomUUID().toString()) // ID único para cada token
+                .claim("iat", System.currentTimeMillis()) // Timestamp exacto
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -44,6 +42,10 @@ public class JwtService {
                 .parseClaimsJws(token)
                 .getBody()
                 .getSubject();
+    }
+
+    public String getUsernameFromToken(String token) {
+        return extractUsername(token);
     }
 
     public boolean isTokenValid(String token) {
@@ -60,4 +62,3 @@ public class JwtService {
         }
     }
 }
-
